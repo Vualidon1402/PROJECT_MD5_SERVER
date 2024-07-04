@@ -1,6 +1,7 @@
 package shop.com.shopdb.modules.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class User {
     private boolean emailConfirm = false;
 
 
-
+//    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "Mật khẩu phải chứa ít nhất 1 chữ cái, 1 số và 8 ký tự")
     private String password;
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private String updateDate = new Date().toString();
