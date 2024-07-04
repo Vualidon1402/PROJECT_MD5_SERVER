@@ -22,7 +22,6 @@ public class Product {
     private Integer product_id;
     private String product_name;
     // mã sản phẩm
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer sku;
     private String description;
     @Column(name = "unit_price", precision = 10, scale = 2)
