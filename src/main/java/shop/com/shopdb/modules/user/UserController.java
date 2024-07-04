@@ -61,7 +61,7 @@ public class UserController {
             if(!BCrypt.checkpw(body.getPassword(), user.getPassword())) {
                 return new ResponseEntity<ResponseLogin>(new ResponseLogin("Mật khẩu sai", null), HttpStatus.BAD_REQUEST);
             }else {
-                return new ResponseEntity<ResponseLogin>(new ResponseLogin("LOgin ok!", JwtBuilder.createTokenUser(user)), HttpStatus.OK);
+                return new ResponseEntity<ResponseLogin>(new ResponseLogin("Đăng nhập thành công", JwtBuilder.createTokenUser(user)), HttpStatus.OK);
             }
         }
     }
