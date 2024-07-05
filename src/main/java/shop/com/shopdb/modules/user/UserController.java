@@ -51,7 +51,7 @@ public class UserController {
                                 "</body>\n" +
                                 "</html>",
                         "http://localhost:8080/user/confirm-email?token=" + JwtBuilder.createTokenForConfirmEmail(new EmailConfirmDTO(result.getData().getEmail(), result.getData().getId())));
-                mailService.sendMailHtml(new SingleOption("quangtrungdn1994@gmail.com", emailContent, result.getData().getEmail()));
+                mailService.sendMailHtml(new SingleOption("Vui lòng xác thực Email để tiếp tục sử dụng dịch vụ của chúng tôi", emailContent, result.getData().getEmail()));
                 return new ResponseEntity<>(new ResponeRegister(result.getMessage(), null), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(new ResponeRegister(result.getErr().getText(lng), null), HttpStatus.BAD_REQUEST);
@@ -62,27 +62,22 @@ public class UserController {
         } catch (Exception e) {
             // Log the exception (use a logging framework in real applications)
             e.printStackTrace();
-            return new ResponseEntity<>(new ResponeRegister("Đã xảy ra lỗi trong quá trình xử lý yêu cầu", null), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponeRegister("Email/UserName đã tồn tại trong hệ thống", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseLogin> loginUser(@RequestBody RequestLogin body) {
-        try {
-            User user = userService.findByLoginId(body.getLoginId());
-            if (user == null) {
-                return new ResponseEntity<>(new ResponseLogin("Tài khoản không tồn tại", null), HttpStatus.BAD_REQUEST);
-            } else {
-                if (!BCrypt.checkpw(body.getPassword(), user.getPassword())) {
-                    return new ResponseEntity<>(new ResponseLogin("Mật khẩu sai", null), HttpStatus.BAD_REQUEST);
-                } else {
-                    return new ResponseEntity<>(new ResponseLogin("Đăng nhập thành công", JwtBuilder.createTokenUser(user)), HttpStatus.OK);
-                }
+    public ResponseEntity<ResponseLogin> loginUser(@RequestBody RequestLogin body) throws IllegalAccessException {
+        User user = userService.findByLoginId(body.getLoginId());
+
+        if(user == null) {
+            return new ResponseEntity<ResponseLogin>(new ResponseLogin("Tài khoản không tồn tại", null), HttpStatus.BAD_REQUEST);
+        }else {
+            if(!BCrypt.checkpw(body.getPassword(), user.getPassword())) {
+                return new ResponseEntity<ResponseLogin>(new ResponseLogin("Mật khẩu sai", null), HttpStatus.BAD_REQUEST);
+            }else {
+                return new ResponseEntity<ResponseLogin>(new ResponseLogin("Đăng nhập thành công", JwtBuilder.createTokenUser(user)), HttpStatus.OK);
             }
-        } catch (Exception e) {
-            // Log the exception (you can use a logging framework like SLF4J or Logback)
-            e.printStackTrace();
-            return new ResponseEntity<>(new ResponseLogin("Đã xảy ra lỗi trong quá trình xử lý yêu cầu", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
