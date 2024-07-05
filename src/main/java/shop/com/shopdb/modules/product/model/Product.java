@@ -23,15 +23,16 @@ public class Product {
     // tên sản phẩm
     @Column(name = "product_name", nullable = false, unique = true)
     private String product_name;
-    // mã sản phẩm
+
     private Integer sku;
     @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
     private Integer unitPrice;
     private Integer stock_quantity;
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ImageProduct> images;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "product_id")
+    private List<ImageProduct> imageProducts;
     @ManyToOne
     @JoinColumn(name = "category_id")
     @JsonBackReference
@@ -39,15 +40,12 @@ public class Product {
     @Column(name = "status", columnDefinition = "BIT DEFAULT 1")
     private Boolean status;
     @Temporal(TemporalType.DATE)
-    private Date created_at;
+    private String created_at;
     @Temporal(TemporalType.DATE)
-    private Date updated_at;
+    private String updated_at;
 
 
     public Integer generateSku() {
-        String productName = this.getProduct_name().replaceAll("\\s+", "").toUpperCase();
-        String prefix = productName.length() > 3 ? productName.substring(0, 3) : productName;
-        this.sku = (int) (Math.random() * 1000000) + Integer.parseInt(prefix);
-        return this.sku;
+        return (int) (Math.random() * 1000000);
     }
 }

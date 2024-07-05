@@ -31,9 +31,9 @@ public class productService {
             productRep.setStock_quantity(product.getStock_quantity());
             productRep.setCategory_id(product.getCategory().getCategory_id());
             productRep.setImageUrls(new ArrayList<>());
-            productRep.setImageUrls(product.getImages().stream()
-                    .map(ImageProduct::getImageUrl)
-                    .collect(Collectors.toList()));
+//            productRep.setImageUrls(product.getImages().stream()
+//                    .map(ImageProduct::getImageUrl)
+//                    .collect(Collectors.toList()));
             productRep.setStatus(product.getStatus());
             productRep.setCreated_at(product.getCreated_at().toString());
             if (product.getUpdated_at() != null) {
@@ -52,16 +52,16 @@ public class productService {
         product.setUnitPrice(productRq.getUnitPrice());
         product.setStock_quantity(productRq.getStock_quantity());
         product.setCategory(categoryService.getCategoryById(productRq.getCategory_id()));
-        product.setCreated_at(new Date());
+        product.setCreated_at(new Date().toString());
         product.setStatus(true);
-        List<ImageProduct> images = new ArrayList<>();
-        for (String imageUrl : productRq.getImages()) {
-            ImageProduct imageProduct = new ImageProduct();
-            imageProduct.setImageUrl(imageUrl);
-            imageProduct.setProduct(product);
-            images.add(imageProduct);
-        }
-        product.setImages(images);
+//        List<ImageProduct> images = new ArrayList<>();
+//        for (String imageUrl : productRq.getImages()) {
+//            ImageProduct imageProduct = new ImageProduct();
+//            imageProduct.setImageUrl(imageUrl);
+//            imageProduct.setProduct(product);
+//            images.add(imageProduct);
+//        }
+//        product.setImages(images);
 
         productRepository.save(product);
         return product;

@@ -4,7 +4,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CategoryRespone {
+public class CategoryResponse {
     private Integer category_id;
     private String category_name;
     private Boolean status;
