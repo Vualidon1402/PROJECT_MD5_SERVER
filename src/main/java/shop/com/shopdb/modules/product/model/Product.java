@@ -24,7 +24,6 @@ public class Product {
     @Column(name = "product_name", nullable = false, unique = true)
     private String product_name;
     // mã sản phẩm
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer sku;
     @Lob
     @Column(columnDefinition = "TEXT")
