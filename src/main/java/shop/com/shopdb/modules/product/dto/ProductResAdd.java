@@ -1,0 +1,29 @@
+package shop.com.shopdb.modules.product.dto;
+
+import lombok.*;
+
+import java.util.List;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class ProductResAdd {
+    private String product_name;
+    private String description;
+    private Integer unitPrice;
+    private Integer stock_quantity;
+    private List<String> images;
+    private Integer category_id;
+
+    @Override
+    public String toString() {
+        return "ProductResAdd{" +
+                "product_name='" + product_name + '\'' +
+                ", description='" + description + '\'' +
+                ", unitPrice=" + unitPrice +
+                ", stock_quantity=" + stock_quantity +
+                ", images=" + images +
+                ", category_id=" + category_id +
+                '}';
+    }
+}
