@@ -2,6 +2,7 @@ package shop.com.shopdb.modules.user;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,49 +23,69 @@ public class UserController {
     @Autowired
     private UserService userService;
     @PostMapping("/register")
-    public ResponseEntity<ResponeRegister> registerUser(@RequestHeader("lng") String lng, @Valid @RequestBody RequestRegister requestRegister) throws IllegalAccessException {
+    public ResponseEntity<ResponeRegister> registerUser(@RequestHeader("lng") String lng, @Valid @RequestBody RequestRegister requestRegister) {
+        try {
+            // Hash password
+            requestRegister.setPassword(BCrypt.hashpw(requestRegister.getPassword(), BCrypt.gensalt()));
 
-        requestRegister.setPassword(BCrypt.hashpw(requestRegister.getPassword(), BCrypt.gensalt()));
+            // Create user
+            CreateResponse result = userService.create(requestRegister);
 
-        CreateResponse result  = userService.create(requestRegister);
-
-        if(result.getErr() == null) {
-            mailService.sendMailHtml(new SingleOption("quangtrungdn1994@gmail.com", String.format("<!DOCTYPE html>\n" +
-                    "<html lang=\"en\">\n" +
-                    "<head>\n" +
-                    "    <meta charset=\"UTF-8\">\n" +
-                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                    "    <title>Xác Thực Email</title>\n" +
-                    "</head>\n" +
-                    "<body>\n" +
-                    "    <h1>Rất hân hạnh được phục vụ quý khách</h1>\n" +
-                    "    <h2>Bấm vào link bên dưới để xác thực</h2>\n" +
-                    "    <a href=\"%s\">\n" +
-                    "        <button>\n" +
-                    "            Xác Thực Ngay\n" +
-                    "        </button>\n" +
-                    "    </a>\n" +
-                    "</body>\n" +
-                    "</html>", "http://localhost:8080/user/confirm-email?token=" + JwtBuilder.createTokenForConfirmEmail(new EmailConfirmDTO(result.getData().getEmail(), result.getData().getId()))), result.getData().getEmail()));
-            return new ResponseEntity<ResponeRegister>(new ResponeRegister(result.getMessage(), null), HttpStatus.OK);
-        }else {
-            return new ResponseEntity<ResponeRegister>(new ResponeRegister(result.getErr().getText(lng), null), HttpStatus.BAD_REQUEST);
-        }
-
-    }
-    @PostMapping("/login")
-    public ResponseEntity<ResponseLogin> loginUser(@RequestBody RequestLogin body) throws IllegalAccessException {
-        User user = userService.findByLoginId(body.getLoginId());
-        if(user == null) {
-            return new ResponseEntity<ResponseLogin>(new ResponseLogin("Tài khoản không tồn tại", null), HttpStatus.BAD_REQUEST);
-        }else {
-            if(!BCrypt.checkpw(body.getPassword(), user.getPassword())) {
-                return new ResponseEntity<ResponseLogin>(new ResponseLogin("Mật khẩu sai", null), HttpStatus.BAD_REQUEST);
-            }else {
-                return new ResponseEntity<ResponseLogin>(new ResponseLogin("Đăng nhập thành công", JwtBuilder.createTokenUser(user)), HttpStatus.OK);
+            if (result.getErr() == null) {
+                // Send confirmation email
+                String emailContent = String.format("<!DOCTYPE html>\n" +
+                                "<html lang=\"en\">\n" +
+                                "<head>\n" +
+                                "    <meta charset=\"UTF-8\">\n" +
+                                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                                "    <title>Xác Thực Email</title>\n" +
+                                "</head>\n" +
+                                "<body>\n" +
+                                "    <h1>Rất hân hạnh được phục vụ quý khách</h1>\n" +
+                                "    <h2>Bấm vào link bên dưới để xác thực tài khoản Pet Shop của bạn</h2>\n" +
+                                "    <a href=\"%s\">\n" +
+                                "        <button>\n" +
+                                "            Xác Thực Ngay\n" +
+                                "        </button>\n" +
+                                "    </a>\n" +
+                                "</body>\n" +
+                                "</html>",
+                        "http://localhost:8080/user/confirm-email?token=" + JwtBuilder.createTokenForConfirmEmail(new EmailConfirmDTO(result.getData().getEmail(), result.getData().getId())));
+                mailService.sendMailHtml(new SingleOption("quangtrungdn1994@gmail.com", emailContent, result.getData().getEmail()));
+                return new ResponseEntity<>(new ResponeRegister(result.getMessage(), null), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new ResponeRegister(result.getErr().getText(lng), null), HttpStatus.BAD_REQUEST);
             }
+        } catch (DataIntegrityViolationException e) {
+            // Handle duplicate key error
+            return new ResponseEntity<>(new ResponeRegister("Email đã tồn tại trong hệ thống", null), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            // Log the exception (use a logging framework in real applications)
+            e.printStackTrace();
+            return new ResponseEntity<>(new ResponeRegister("Đã xảy ra lỗi trong quá trình xử lý yêu cầu", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<ResponseLogin> loginUser(@RequestBody RequestLogin body) {
+        try {
+            User user = userService.findByLoginId(body.getLoginId());
+            if (user == null) {
+                return new ResponseEntity<>(new ResponseLogin("Tài khoản không tồn tại", null), HttpStatus.BAD_REQUEST);
+            } else {
+                if (!BCrypt.checkpw(body.getPassword(), user.getPassword())) {
+                    return new ResponseEntity<>(new ResponseLogin("Mật khẩu sai", null), HttpStatus.BAD_REQUEST);
+                } else {
+                    return new ResponseEntity<>(new ResponseLogin("Đăng nhập thành công", JwtBuilder.createTokenUser(user)), HttpStatus.OK);
+                }
+            }
+        } catch (Exception e) {
+            // Log the exception (you can use a logging framework like SLF4J or Logback)
+            e.printStackTrace();
+            return new ResponseEntity<>(new ResponseLogin("Đã xảy ra lỗi trong quá trình xử lý yêu cầu", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/user/verify")
     public ResponseEntity<VerifyAuth> verifyUser(@RequestBody ResponseLogin body) {
         User user = JwtBuilder.verifyTokenUser(body.getToken());
