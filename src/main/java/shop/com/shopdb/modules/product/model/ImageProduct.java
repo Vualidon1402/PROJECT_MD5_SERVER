@@ -19,7 +19,4 @@ public class ImageProduct {
     @Column(nullable = false)
     private String imageUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
 }

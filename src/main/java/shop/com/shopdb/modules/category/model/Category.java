@@ -1,4 +1,5 @@
 package shop.com.shopdb.modules.category.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -21,5 +22,6 @@ public class Category {
     private Boolean status = true;
     private String image;
     @OneToMany(mappedBy = "category")
+    @JsonIgnore
     private List<Product> products;
 }

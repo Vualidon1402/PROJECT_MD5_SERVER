@@ -12,7 +12,7 @@ public class ProductResAdd {
     private String description;
     private Integer unitPrice;
     private Integer stock_quantity;
-    private List<String> images;
+    private List<String> imageUrls;
     private Integer category_id;
 
     @Override
@@ -22,7 +22,7 @@ public class ProductResAdd {
                 ", description='" + description + '\'' +
                 ", unitPrice=" + unitPrice +
                 ", stock_quantity=" + stock_quantity +
-                ", images=" + images +
+                ", images=" + imageUrls +
                 ", category_id=" + category_id +
                 '}';
     }

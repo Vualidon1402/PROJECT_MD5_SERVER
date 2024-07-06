@@ -3,11 +3,13 @@ package shop.com.shopdb.modules.category;
 import jakarta.persistence.GeneratedValue;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.com.shopdb.modules.category.dto.AddCategoryRes;
 import shop.com.shopdb.modules.category.dto.CategoryRequest;
+import shop.com.shopdb.modules.category.dto.CategoryResponse;
 import shop.com.shopdb.modules.category.dto.CategoryUpdateRq;
 import shop.com.shopdb.modules.category.model.Category;
 import shop.com.shopdb.modules.category.service.CategoryService;
@@ -20,8 +22,27 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping("/category")
-    public ResponseEntity<List<Category>> getAllCategories() {
-        return ResponseEntity.ok(categoryService.getActiveCategories());
+    public ResponseEntity<Page<CategoryResponse>> getAllCategory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        try {
+            return ResponseEntity.ok(categoryService.getAllCategory(page, pageSize));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @GetMapping("/category/search")
+    public ResponseEntity<Page<CategoryResponse>> searchCategory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam String search
+    ) {
+        try {
+            return ResponseEntity.ok(categoryService.searchCategoryByName(page, pageSize, search));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<Category> getCategoryById(@PathVariable Integer categoryId) {

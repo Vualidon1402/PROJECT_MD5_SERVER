@@ -1,10 +1,13 @@
 package shop.com.shopdb.modules.category.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import shop.com.shopdb.modules.category.CategoryRepository;
 import shop.com.shopdb.modules.category.dto.CategoryRequest;
-import shop.com.shopdb.modules.category.dto.CategoryRespone;
+import shop.com.shopdb.modules.category.dto.CategoryResponse;
 import shop.com.shopdb.modules.category.dto.CategoryUpdateRq;
 import shop.com.shopdb.modules.category.model.Category;
 
@@ -36,8 +39,10 @@ public class CategoryService {
         }
     }
 
-    public List<Category> getActiveCategories() {
-        return categoryRepository.findByStatusTrue();
+    public Page<CategoryResponse> getAllCategory(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Category> categories = categoryRepository.findByStatusTrue(pageable);
+        return categories.map(this::convertToCategoryResponse);
     }
 
 
@@ -64,7 +69,19 @@ public class CategoryService {
             throw new RuntimeException("Category not found");
         }
     }
-    public List<Category> searchCategoryByName(String name) {
-        return categoryRepository.findByCategoryNameContaining(name);
+    public Page<CategoryResponse> searchCategoryByName(int page, int pageSize, String name) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Category> categories = categoryRepository.findByCategoryNameContainingAndStatusTrue(name, pageable);
+
+        return categories.map(this::convertToCategoryResponse);
+    }
+
+    private CategoryResponse convertToCategoryResponse(Category category) {
+        CategoryResponse categoryResponse = new CategoryResponse();
+        categoryResponse.setCategory_id(category.getCategory_id());
+        categoryResponse.setCategory_name(category.getCategory_name());
+        categoryResponse.setStatus(category.getStatus());
+        categoryResponse.setImage(category.getImage());
+        return categoryResponse;
     }
 }
