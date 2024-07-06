@@ -5,10 +5,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import shop.com.shopdb.ErrMessage.ErrLib;
+import shop.com.shopdb.modules.address.Address;
 import shop.com.shopdb.modules.user.User;
 import shop.com.shopdb.modules.user.dto.CreateResponse;
 import shop.com.shopdb.modules.user.dto.RequestRegister;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,5 +64,15 @@ public class UserService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public User addOrUpdateAddresses(int userId, List<Address> newAddresses) {
+
+        User user = iUserService.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        for (Address address : newAddresses) {
+            address.setUser(user);
+            user.getAddresses().add(address);
+        }
+        return iUserService.save(user);
     }
 }

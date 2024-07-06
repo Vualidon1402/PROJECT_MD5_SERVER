@@ -1,13 +1,15 @@
 package shop.com.shopdb.modules.user;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import shop.com.shopdb.modules.address.Address;
+
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,30 +29,16 @@ public class User {
 
     private boolean emailConfirm = false;
 
-
-//    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "Mật khẩu phải chứa ít nhất 1 chữ cái, 1 số và 8 ký tự")
     private String password;
+
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private String updateDate = new Date().toString();
+
     private boolean role = false;
     private boolean status = false;
 
     private String phone;
-    private String address = null;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                ", password='" + password + '\'' +
-                ", updateDate='" + updateDate + '\'' +
-                ", role=" + role +
-                ", status=" + status +
-                '}';
-    }
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses;
 }

@@ -9,6 +9,7 @@ import shop.com.shopdb.util.jwt.dto.EmailConfirmDTO;
 import shop.com.shopdb.modules.user.User;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class JwtBuilder {
     private static String secretKey = "QuangTrungDepTrai";
@@ -76,11 +77,11 @@ public class JwtBuilder {
             String password = jwt.getClaim("password").asString();
             Boolean emailConfirm = Boolean.parseBoolean(jwt.getClaim("emailConfirm").asString());
             String phone = jwt.getClaim("phone").asString();
-            String address = jwt.getClaim("address").asString();
+            List addresses = jwt.getClaim("addresses").asList(String.class);
             String updateDate = jwt.getClaim("updateDate").asString();
 
 
-            return new User(id, userName, email, emailConfirm, password,updateDate, role, status, phone, address);
+            return new User(id, userName, email, emailConfirm, password,updateDate, role, status, phone, addresses);
         } catch (JWTVerificationException exception){
             return null;
         }
