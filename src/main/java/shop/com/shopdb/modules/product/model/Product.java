@@ -48,4 +48,5 @@ public class Product {
     public Integer generateSku() {
         return (int) (Math.random() * 1000000);
     }
+
 }
