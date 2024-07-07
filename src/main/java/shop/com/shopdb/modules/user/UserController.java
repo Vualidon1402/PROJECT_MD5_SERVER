@@ -16,7 +16,6 @@ import shop.com.shopdb.util.jwt.JwtBuilder;
 import shop.com.shopdb.util.jwt.dto.EmailConfirmDTO;
 
 @Controller
-@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     private MailService mailService;
