@@ -12,7 +12,6 @@ import shop.com.shopdb.modules.product.dto.ProductResAdd;
 import shop.com.shopdb.modules.product.model.Product;
 
 import java.util.List;
-@CrossOrigin("*")
 @RestController
 public class productController {
 

@@ -15,7 +15,6 @@ import shop.com.shopdb.modules.category.model.Category;
 import shop.com.shopdb.modules.category.service.CategoryService;
 
 import java.util.List;
-@CrossOrigin("*")
 @RestController
 public class CategoryController {
     @Autowired
