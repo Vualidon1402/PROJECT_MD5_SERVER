@@ -3,11 +3,15 @@ package shop.com.shopdb.modules.user.service;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import shop.com.shopdb.ErrMessage.ErrLib;
 import shop.com.shopdb.modules.user.User;
 import shop.com.shopdb.modules.user.dto.CreateResponse;
 import shop.com.shopdb.modules.user.dto.RequestRegister;
+import shop.com.shopdb.modules.user.dto.UserRep;
 
 import java.util.Optional;
 
@@ -62,5 +66,26 @@ public class UserService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public Page<UserRep> findByStatusTrue(int page, int pageSize) {
+        try {
+            Pageable pageable = PageRequest.of(page, pageSize);
+            Page<User> users = iUserService.findByStatusTrue(pageable);
+            return users.map(this::convertToUserRep);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public UserRep convertToUserRep(User user) {
+        UserRep userRep = new UserRep();
+        userRep.setId(user.getId());
+        userRep.setUserName(user.getUserName());
+        userRep.setEmail(user.getEmail());
+        userRep.setPhone(user.getPhone());
+        userRep.setAddress(user.getAddress());
+        userRep.setRole(user.isRole());
+        userRep.setStatus(user.isStatus());
+        return userRep;
     }
 }

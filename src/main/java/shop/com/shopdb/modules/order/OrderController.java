@@ -3,6 +3,7 @@ package shop.com.shopdb.modules.order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import shop.com.shopdb.modules.order.dto.AddToCartDTO;
+import shop.com.shopdb.modules.order.dto.TotalAmout;
 import shop.com.shopdb.modules.user.User;
 import shop.com.shopdb.util.jwt.JwtBuilder;
 
@@ -37,6 +38,15 @@ public class OrderController {
 //            return "error";
 //        }
 //    }
+@PostMapping("/order/check-out/{orderId}")
+    public String checkout(@PathVariable Integer orderId, @RequestBody TotalAmout totalamout) {
+        try {
+            orderService.checkOut(orderId , totalamout.getTotalamout());
+            return "order/checkout";
+        } catch (Exception e) {
+            return "error";
+        }
+    }
     @GetMapping("/order/find-cart")
     public List<Orders> findCart(@RequestHeader("token") String token) {
         try {

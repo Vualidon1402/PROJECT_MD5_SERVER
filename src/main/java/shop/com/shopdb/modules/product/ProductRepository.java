@@ -13,4 +13,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     // phương thức tìm kiếm toàn bộ category theo chuỗi tương đối
     @Query("SELECT p FROM Product p WHERE p.product_name LIKE %:name% AND p.status = true")
     Page<Product> findByProductNameContainingAndStatusTrue(String name, Pageable pageable);
+
 }

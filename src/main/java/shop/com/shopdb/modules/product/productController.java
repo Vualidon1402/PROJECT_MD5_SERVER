@@ -17,7 +17,6 @@ public class productController {
 
     @Autowired
     private productService productService;
-
     @GetMapping("/product")
     public ResponseEntity<Page<ProductRep>> getProduct(
             @RequestParam(defaultValue = "0") int page,
