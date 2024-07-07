@@ -8,11 +8,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import shop.com.shopdb.ErrMessage.ErrLib;
+import shop.com.shopdb.modules.address.Address;
 import shop.com.shopdb.modules.user.User;
 import shop.com.shopdb.modules.user.dto.CreateResponse;
 import shop.com.shopdb.modules.user.dto.RequestRegister;
 import shop.com.shopdb.modules.user.dto.UserRep;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -87,5 +89,13 @@ public class UserService {
         userRep.setRole(user.isRole());
         userRep.setStatus(user.isStatus());
         return userRep;
+    public User addOrUpdateAddresses(int userId, List<Address> newAddresses) {
+
+        User user = iUserService.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        for (Address address : newAddresses) {
+            address.setUser(user);
+            user.getAddresses().add(address);
+        }
+        return iUserService.save(user);
     }
 }
