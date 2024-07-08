@@ -99,12 +99,16 @@ public class OrderService {
         return orderRepository.findByUserId(userId);
     }
 
-    public void checkOut(int orderId) {
-        Optional<Orders> order = orderRepository.findById(orderId);
-        if(order.isPresent()) {
-            order.get().setStatus(Status.WAITING);
-            orderRepository.save(order.get());
-        }
+    public void checkOut(int orderId, int totalAmount) {
+       try {
+           System.out.println("đã vào");
+           Orders order = orderRepository.findById(orderId).get();
+           order.setStatus(Status.WAITING);
+           order.setTotalPrices(totalAmount);
+           orderRepository.save(order);
+         }catch (Exception e) {
+           System.out.println("Error: " + e.getMessage());
+       }
     }
 
 }

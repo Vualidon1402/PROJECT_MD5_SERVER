@@ -3,6 +3,7 @@ package shop.com.shopdb.modules.user;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,7 @@ import shop.com.shopdb.modules.user.service.UserService;
 import shop.com.shopdb.util.jwt.JwtBuilder;
 import shop.com.shopdb.util.jwt.dto.EmailConfirmDTO;
 
-@Controller
+@RestController
 public class UserController {
     @Autowired
     private MailService mailService;
@@ -101,6 +102,18 @@ public class UserController {
             return "email_verified.html";
         }else {
             return "email_fail.html";
+        }
+    }
+    @GetMapping("/user")
+    public ResponseEntity<Page<UserRep>> getAllUser(@RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int pageSize) {
+        try {
+            Page<UserRep> users = userService.findByStatusTrue(page, pageSize);
+            System.out.println(users);
+            System.out.println("đã vào");
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 }

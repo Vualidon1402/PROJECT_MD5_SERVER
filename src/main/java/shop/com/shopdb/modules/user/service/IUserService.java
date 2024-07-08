@@ -1,5 +1,7 @@
 package shop.com.shopdb.modules.user.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +20,5 @@ public interface IUserService extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT * FROM user WHERE user.userName = :loginId OR (user.email = :loginId AND user.status = false)", nativeQuery = true)
     User findByLoginId(@Param("loginId") String loginId);
+    Page<User> findByStatusTrue(Pageable pageable);
 }
